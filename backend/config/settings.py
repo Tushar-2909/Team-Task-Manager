@@ -75,7 +75,7 @@ DATABASES = {
     )
 }
 
-if os.environ.get("RENDER") and not os.environ.get("DATABASE_URL"):
+if os.environ.get("RENDER"):
     DATABASES["default"]["NAME"] = "/tmp/db.sqlite3"
 
 AUTH_USER_MODEL = "accounts.User"
