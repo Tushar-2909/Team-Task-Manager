@@ -14,7 +14,8 @@ def env_bool(value):
     return str(value).strip().lower() in {"1", "true", "yes", "on", "debug", "development"}
 
 
-DEBUG = config("DEBUG", default=True, cast=env_bool)
+DEBUG = True
+
 default_allowed_hosts = "localhost,127.0.0.1"
 if os.environ.get("RENDER"):
     default_allowed_hosts = ".onrender.com,localhost,127.0.0.1"
