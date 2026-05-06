@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 from pathlib import Path
 
 import dj_database_url
@@ -69,6 +70,9 @@ DATABASES = {
         conn_max_age=600,
     )
 }
+
+if os.environ.get("RENDER") and not os.environ.get("DATABASE_URL"):
+    DATABASES["default"]["NAME"] = "/tmp/db.sqlite3"
 
 AUTH_USER_MODEL = "accounts.User"
 

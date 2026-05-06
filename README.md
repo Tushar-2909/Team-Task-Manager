@@ -21,7 +21,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
 
-The backend uses SQLite by default at `backend/db.sqlite3` when `DATABASE_URL` is not set.
+The backend uses SQLite by default at `backend/db.sqlite3` when `DATABASE_URL` is not set. On Render, it uses `/tmp/db.sqlite3` for the demo deployment when `DATABASE_URL` is absent.
 
 Run the API:
 
@@ -115,10 +115,10 @@ The repository also includes `render.yaml` for Render Blueprint deployments.
 
 Render notes:
 
-- Leave `DATABASE_URL` unset to use SQLite at `backend/db.sqlite3`.
+- Leave `DATABASE_URL` unset to use SQLite. On Render, the app stores the demo database at `/tmp/db.sqlite3`.
 - Render provides a `PORT` automatically. Gunicorn binds correctly on Render with the default Python runtime settings.
 - `backend/build.sh` installs dependencies, collects static files, and runs migrations.
-- Important: SQLite on Render's normal web service filesystem is not durable across redeploys/restarts. For a demo assignment it can work, but for real production data use PostgreSQL or attach persistent disk storage.
+- Important: SQLite on Render is not durable across redeploys/restarts. For a demo assignment it can work, but for real production data use PostgreSQL or attach persistent disk storage.
 
 ### Frontend on Netlify
 
