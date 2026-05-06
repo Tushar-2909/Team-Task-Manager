@@ -1,6 +1,6 @@
 # Team Task Manager
 
-A production-ready full-stack task manager with Django REST Framework, JWT auth, PostgreSQL, React, Vite, Tailwind CSS, ShadCN-style UI primitives, Zustand, Axios, Recharts, and drag-and-drop task movement.
+A production-ready full-stack task manager with Django REST Framework, JWT auth, SQLite, React, Vite, Tailwind CSS, ShadCN-style UI primitives, Zustand, Axios, Recharts, and drag-and-drop task movement.
 
 ## 1. Backend Setup
 
@@ -12,15 +12,16 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Create a PostgreSQL database and update `backend/.env`:
+Create `backend/.env`:
 
 ```env
 SECRET_KEY=your-secret-key
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/team_task_manager
 CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 ```
+
+The backend uses SQLite by default at `backend/db.sqlite3` when `DATABASE_URL` is not set.
 
 Run the API:
 
@@ -92,23 +93,21 @@ Tokens are stored in local storage for this assessment build, with automatic acc
 ### Backend on Render
 
 1. Push this repository to GitHub.
-2. Go to Render and create a PostgreSQL database.
-3. Create a new Web Service from the same GitHub repository.
-4. Set the root directory to `backend`.
-5. Use these commands:
+2. Create a new Web Service from the same GitHub repository.
+3. Set the root directory to `backend`.
+4. Use these commands:
 
 ```bash
 Build Command: bash build.sh
-Start Command: gunicorn config.wsgi:application
+Start Command: python manage.py migrate --noinput && gunicorn config.wsgi:application
 ```
 
-6. Add environment variables:
+5. Add environment variables:
 
 ```env
 SECRET_KEY=strong-production-secret
 DEBUG=False
 ALLOWED_HOSTS=your-backend.onrender.com
-DATABASE_URL=your-render-postgres-internal-database-url
 CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app
 ```
 
@@ -116,9 +115,10 @@ The repository also includes `render.yaml` for Render Blueprint deployments.
 
 Render notes:
 
-- Use the internal PostgreSQL connection string for `DATABASE_URL`.
+- Leave `DATABASE_URL` unset to use SQLite at `backend/db.sqlite3`.
 - Render provides a `PORT` automatically. Gunicorn binds correctly on Render with the default Python runtime settings.
 - `backend/build.sh` installs dependencies, collects static files, and runs migrations.
+- Important: SQLite on Render's normal web service filesystem is not durable across redeploys/restarts. For a demo assignment it can work, but for real production data use PostgreSQL or attach persistent disk storage.
 
 ### Frontend on Netlify
 
@@ -158,7 +158,7 @@ CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app
 
 ## 5. Production Notes
 
-- PostgreSQL is configured through `DATABASE_URL` using `dj-database-url`.
+- SQLite is used by default when `DATABASE_URL` is unset.
 - CORS is environment-driven with `django-cors-headers`.
 - JWT authentication uses `djangorestframework-simplejwt`.
 - Creating a project promotes the creator to Admin.
