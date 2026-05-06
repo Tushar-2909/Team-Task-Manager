@@ -1,0 +1,196 @@
+# Team Task Manager
+
+A production-ready full-stack task manager with Django REST Framework, JWT auth, PostgreSQL, React, Vite, Tailwind CSS, ShadCN-style UI primitives, Zustand, Axios, Recharts, and drag-and-drop task movement.
+
+## 1. Backend Setup
+
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+Create a PostgreSQL database and update `backend/.env`:
+
+```env
+SECRET_KEY=your-secret-key
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/team_task_manager
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Run the API:
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+Backend apps:
+
+- `accounts`: custom `User` model with `ADMIN` and `MEMBER` roles, register/login serializers, JWT token issuing.
+- `projects`: `Project` and `Membership`, creator becomes Admin, owner-admin project management, member visibility.
+- `tasks`: task CRUD, priority, assignment validation, status workflow, dashboard stats.
+
+Main endpoints:
+
+- `POST /api/auth/register/`
+- `POST /api/auth/login/`
+- `POST /api/auth/refresh/`
+- `GET /api/auth/users/`
+- `GET|POST /api/projects/`
+- `GET|PATCH|DELETE /api/projects/:id/`
+- `POST /api/projects/:id/members/`
+- `DELETE /api/projects/:id/members/:user_id/`
+- `GET|POST /api/tasks/`
+- `GET|PATCH|DELETE /api/tasks/:id/`
+- `GET /api/tasks/dashboard/`
+
+## 2. Frontend Setup
+
+```bash
+cd frontend
+npm install
+copy .env.example .env
+npm run dev
+```
+
+Set the API URL in `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+Frontend structure:
+
+- `src/components`: reusable UI and route guard components.
+- `src/components/ui`: ShadCN-style Tailwind primitives.
+- `src/layouts`: authenticated sidebar layout.
+- `src/pages`: login, signup, dashboard, projects, task board, profile.
+- `src/services`: Axios API clients and JWT refresh interceptor.
+- `src/store`: Zustand auth state.
+- `src/hooks`: shared async loading helper.
+
+## 3. Integration Flow
+
+1. Register or login.
+2. Create a project. The creator is promoted to `ADMIN`.
+3. Register member accounts.
+4. Add/remove members from the Projects page or with `POST /api/projects/:id/members/`.
+5. Create tasks with title, description, due date, priority, project, and assignee.
+6. Drag assigned tasks between `Todo`, `In Progress`, and `Done`.
+7. Dashboard stats update from `GET /api/tasks/dashboard/`, including total tasks, tasks by status, tasks per user, and overdue tasks.
+
+Tokens are stored in local storage for this assessment build, with automatic access-token refresh via Axios. For a hardened production deployment, move refresh tokens to secure, HTTP-only cookies.
+
+## 4. Deployment
+
+### Backend on Render
+
+1. Push this repository to GitHub.
+2. Go to Render and create a PostgreSQL database.
+3. Create a new Web Service from the same GitHub repository.
+4. Set the root directory to `backend`.
+5. Use these commands:
+
+```bash
+Build Command: bash build.sh
+Start Command: gunicorn config.wsgi:application
+```
+
+6. Add environment variables:
+
+```env
+SECRET_KEY=strong-production-secret
+DEBUG=False
+ALLOWED_HOSTS=your-backend.onrender.com
+DATABASE_URL=your-render-postgres-internal-database-url
+CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app
+```
+
+The repository also includes `render.yaml` for Render Blueprint deployments.
+
+Render notes:
+
+- Use the internal PostgreSQL connection string for `DATABASE_URL`.
+- Render provides a `PORT` automatically. Gunicorn binds correctly on Render with the default Python runtime settings.
+- `backend/build.sh` installs dependencies, collects static files, and runs migrations.
+
+### Frontend on Netlify
+
+1. Go to Netlify and import the same GitHub repository.
+2. Set base directory to `frontend`.
+3. Build command:
+
+```bash
+npm run build
+```
+
+4. Publish directory:
+
+```text
+frontend/dist
+```
+
+If Netlify asks for publish directory relative to the base directory, use:
+
+```text
+dist
+```
+
+5. Add environment variable:
+
+```env
+VITE_API_URL=https://your-backend.onrender.com/api
+```
+
+6. After Netlify deploys, copy the Netlify URL and update Render:
+
+```env
+CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app
+```
+
+`frontend/netlify.toml` includes SPA redirects for React Router.
+
+## 5. Production Notes
+
+- PostgreSQL is configured through `DATABASE_URL` using `dj-database-url`.
+- CORS is environment-driven with `django-cors-headers`.
+- JWT authentication uses `djangorestframework-simplejwt`.
+- Creating a project promotes the creator to Admin.
+- Admin-only write actions are enforced for project and user management.
+- Admins can manage tasks inside their projects.
+- Members can view and update assigned tasks only.
+- Task assignment validates that the assignee belongs to the task project.
+- Dashboard includes total, completed, overdue, tasks by status, tasks per user, and due-soon tasks.
+
+## 6. Submission Checklist
+
+- Live Render backend URL
+- Live Netlify frontend URL
+- GitHub repository URL
+- README with setup and deployment steps
+- 2-5 minute demo video explaining auth, projects, tasks, dashboard, roles, and deployment
+
+## 7. Useful Commands
+
+Backend:
+
+```bash
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run dev
+npm run build
+```
