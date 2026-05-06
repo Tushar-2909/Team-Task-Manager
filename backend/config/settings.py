@@ -36,9 +36,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -99,10 +99,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
-    default="http://localhost:5173,http://127.0.0.1:5173",
+    default="http://localhost:5173,http://127.0.0.1:5173,https://team-task-manager-frontend.netlify.app",
     cast=Csv(),
 )
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=False, cast=env_bool)
+CORS_ALLOW_HEADERS = config(
+    "CORS_ALLOW_HEADERS",
+    default="accept,accept-encoding,authorization,content-type,dnt,origin,user-agent,x-csrftoken,x-requested-with",
+    cast=Csv(),
+)
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
