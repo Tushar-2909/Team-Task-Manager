@@ -15,7 +15,10 @@ def env_bool(value):
 
 
 DEBUG = config("DEBUG", default=True, cast=env_bool)
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost,127.0.0.1", cast=Csv())
+default_allowed_hosts = "localhost,127.0.0.1"
+if os.environ.get("RENDER"):
+    default_allowed_hosts = ".onrender.com,localhost,127.0.0.1"
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default=default_allowed_hosts, cast=Csv())
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -99,6 +102,7 @@ CORS_ALLOWED_ORIGINS = config(
     default="http://localhost:5173,http://127.0.0.1:5173",
     cast=Csv(),
 )
+CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=bool(os.environ.get("RENDER")), cast=env_bool)
 CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {

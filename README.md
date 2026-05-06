@@ -107,8 +107,6 @@ Start Command: python manage.py migrate --noinput && gunicorn config.wsgi:applic
 ```env
 SECRET_KEY=strong-production-secret
 DEBUG=False
-ALLOWED_HOSTS=your-backend.onrender.com
-CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app
 ```
 
 The repository also includes `render.yaml` for Render Blueprint deployments.
@@ -116,6 +114,8 @@ The repository also includes `render.yaml` for Render Blueprint deployments.
 Render notes:
 
 - Leave `DATABASE_URL` unset to use SQLite. On Render, the app stores the demo database at `/tmp/db.sqlite3`.
+- Render `.onrender.com` hosts are allowed automatically by the Django settings.
+- CORS is open automatically on Render for this demo deployment. For a stricter deployment, set `CORS_ALLOW_ALL_ORIGINS=False` and `CORS_ALLOWED_ORIGINS=https://your-frontend.netlify.app`.
 - Render provides a `PORT` automatically. Gunicorn binds correctly on Render with the default Python runtime settings.
 - `backend/build.sh` installs dependencies, collects static files, and runs migrations.
 - Important: SQLite on Render is not durable across redeploys/restarts. For a demo assignment it can work, but for real production data use PostgreSQL or attach persistent disk storage.
