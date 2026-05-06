@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.validators import UniqueValidator
 
 from .models import User
 
@@ -13,6 +14,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A user with this username already exists.",
+            ),
+        ],
+    )
     password = serializers.CharField(write_only=True, min_length=8)
 
     class Meta:
