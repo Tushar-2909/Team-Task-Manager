@@ -76,7 +76,7 @@ DATABASES = {
 }
 
 if os.environ.get("RENDER"):
-    DATABASES["default"]["NAME"] = "/var/data/db.sqlite3"
+    DATABASES["default"]["NAME"] = "/tmp/db.sqlite3"
 
 AUTH_USER_MODEL = "accounts.User"
 
