@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: backend
     buildCommand: bash build.sh
-    startCommand: mkdir -p /tmp && touch /tmp/db.sqlite3 && python manage.py migrate --noinput && gunicorn config.wsgi:application
+    startCommand: python manage.py migrate && gunicorn config.wsgi:application
     envVars:
       - key: DEBUG
         value: "False"

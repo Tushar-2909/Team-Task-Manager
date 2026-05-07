@@ -70,13 +70,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default="sqlite:///db.sqlite3",
         conn_max_age=600,
     )
 }
-
-if os.environ.get("RENDER"):
-    DATABASES["default"]["NAME"] = "/tmp/db.sqlite3"
 
 AUTH_USER_MODEL = "accounts.User"
 
